@@ -3,14 +3,6 @@ import json
 import random
 from start_screen import start_screen
 
-# Kelompok 2
-# 1. Ayla Ainayyah M
-# 2. Aurora Ruth Praticia Sagala
-# 3. Danita Divka Sajmira
-# 4. Divana Taricha Salmalina
-# 5. Ega Dwi Umadani
-# 6. Dina Rahma Prasilda
-
 pg.init()
 
 screen_width = 417
