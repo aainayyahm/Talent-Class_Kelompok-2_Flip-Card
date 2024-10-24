@@ -139,9 +139,10 @@ class WordGame:
                 else:
                     screen.blit(card_back_img, (x, y))
 
-            # Menampilkan waktu
+            # Menampilkan waktu dan back button di game screen
             timer_text = self.font.render(f"Time: {self.time_remaining}s", True, (0, 0, 0))
             screen.blit(timer_text, (screen_width - 240, 20))
+            screen.blit(back_button, (screen_width // 2 - 185, screen_height // 2.8 - 200))
 
 def game_screen():
     pg.display.set_caption("Lontaraku Game")
@@ -170,6 +171,10 @@ def game_screen():
                         return start_screen(game_screen)
                 else:
                     mouse_x, mouse_y = event.pos
+                    back_rect = pg.Rect(screen_width // 2 - 185, screen_height // 2.8 - 200, back_button.get_width(), back_button.get_height())
+                    if back_rect.collidepoint(mouse_x, mouse_y):
+                        return start_screen(game_screen)
+                    
                     for index, card in enumerate(game.cards):
                         x = (index % 4) * (card_back_img.get_width() + 10) + 50
                         y = (index // 4) * (card_back_img.get_height() + 10) + 50
