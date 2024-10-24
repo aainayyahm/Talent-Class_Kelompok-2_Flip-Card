@@ -22,6 +22,7 @@ game_over_img = pg.image.load("Assets/game_over.png")
 restart_button = pg.image.load("Assets/restart_button.png")  
 win_img = pg.image.load("Assets/star3.png")  
 back_button = pg.image.load("Assets/back_button.png")
+shuffle_button = pg.image.load("Assets/shuffle_button.png")
 
 # Mengubah ukuran images
 background_img = pg.transform.smoothscale(background_img, (screen_width, screen_height))
@@ -29,6 +30,7 @@ game_over_img = pg.transform.smoothscale(game_over_img, (int(game_over_img.get_w
 win_img = pg.transform.smoothscale(win_img, (int(win_img.get_width() * scale), int(win_img.get_height() * scale)))
 restart_button = pg.transform.smoothscale(restart_button, (int(restart_button.get_width() * scale), int(restart_button.get_height() * scale)))
 back_button = pg.transform.smoothscale(back_button, (int(back_button.get_width() * scale), int(back_button.get_height() * scale)))
+shuffle_button = pg.transform.smoothscale(shuffle_button, (int(shuffle_button.get_width() * scale), int(shuffle_button.get_height() * scale)))
 card_back_img = pg.transform.smoothscale(card_back_img, (int(card_back_img.get_width() * scale), int(card_back_img.get_height() * scale)))
 card_open_img = pg.transform.smoothscale(card_open_img, (int(card_open_img.get_width() * scale), int(card_open_img.get_height() * scale)))
 
@@ -57,6 +59,7 @@ class WordGame:
         self.mismatch_timer = 0
         self.game_over = False  # Game over state
         self.win = False  # Win state
+        self.rotation_angle = 0
 
     # Memanggil file Json
     def load_cards(self, number_of_pairs):
@@ -67,11 +70,18 @@ class WordGame:
             card2 = WordCard(content['word'], content['name'])
             self.cards.extend([card1, card2])
         random.shuffle(self.cards)
-
+        
+    def shuffle_cards(self):
+            random.shuffle(self.cards)  # Mengacak posisi kartu
+            for card in self.cards:
+                card.is_face_up = False  # Tutup semua kartu yang terbuka
+            self.flipped_cards = []  # Kosongkan daftar flipped cards
+            self.mismatch_timer = 0
+    
     def update(self):
         if not self.game_over and not self.win:
             elapsed_time = (pg.time.get_ticks() - self.start_time) / 1000  # Konversi ke detik
-            self.time_remaining = max(0, 60 - int(elapsed_time))  # Update waktu ke 60 detik
+            self.time_remaining = max(0, 60 - int(elapsed_time))  # Update waktu ke 60 detik dan berkurang setiap detik
             if self.time_remaining <= 0:
                 self.end_game()
 
@@ -143,6 +153,7 @@ class WordGame:
             timer_text = self.font.render(f"Time: {self.time_remaining}s", True, (0, 0, 0))
             screen.blit(timer_text, (screen_width - 240, 20))
             screen.blit(back_button, (screen_width // 2 - 185, screen_height // 2.8 - 200))
+            screen.blit(shuffle_button, (screen_width // 2 + 148, screen_height // 2.8 - 200))
 
 def game_screen():
     pg.display.set_caption("Lontaraku Game")
@@ -175,9 +186,14 @@ def game_screen():
                     if back_rect.collidepoint(mouse_x, mouse_y):
                         return start_screen(game_screen)
                     
+                    shuffle_rect = pg.Rect(screen_width // 2 + 148, screen_height // 2.8 - 200, shuffle_button.get_width(), shuffle_button.get_height())
+                    if shuffle_rect.collidepoint(mouse_x, mouse_y):
+                        game.shuffle_cards()
+
                     for index, card in enumerate(game.cards):
-                        x = (index % 4) * (card_back_img.get_width() + 10) + 50
-                        y = (index // 4) * (card_back_img.get_height() + 10) + 50
+                        x = (index % 4) * (card_back_img.get_width() + 10) + 30
+                        y = (index // 4) * (card_back_img.get_height() + 10) + 70
+    
                         if x < mouse_x < x + card_back_img.get_width() and y < mouse_y < y + card_back_img.get_height():
                             if not card.is_face_up and not card.is_matched:
                                 card.flip()
