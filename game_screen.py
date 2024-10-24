@@ -34,6 +34,20 @@ shuffle_button = pg.transform.smoothscale(shuffle_button, (int(shuffle_button.ge
 card_back_img = pg.transform.smoothscale(card_back_img, (int(card_back_img.get_width() * scale), int(card_back_img.get_height() * scale)))
 card_open_img = pg.transform.smoothscale(card_open_img, (int(card_open_img.get_width() * scale), int(card_open_img.get_height() * scale)))
 
+# Load music
+sound_effect = pg.mixer.Sound("Assets/Lets Go.wav")
+sound_effect.set_volume(0.5)
+sound_effect.play(-1)
+
+sound_lose = pg.mixer.Sound("Assets/Lose.wav")
+sound_lose.set_volume(0.1)
+
+sound_win = pg.mixer.Sound("Assets/Win.wav")
+sound_win.set_volume(0.1)
+
+sound_shuffle = pg.mixer.Sound("Assets/Shuffle.wav")
+sound_shuffle.set_volume(1)
+
 class WordCard:
     def __init__(self, word, name):
         self.word = word
@@ -60,7 +74,18 @@ class WordGame:
         self.mismatch_timer = 0
         self.game_over = False  # Game over state
         self.win = False  # Win state
-        self.rotation_angle = 0
+        self.is_music_playing = True
+
+    # Kondisi untuk play background musik kecuali saat win dan game over
+    def manage_background_music(self):
+        if self.win or self.game_over:
+            if self.is_music_playing:
+                sound_effect.stop()
+                self.is_music_playing = False
+        else:
+            if not self.is_music_playing:
+                sound_effect.play(-1)  
+                self.is_music_playing = True
 
     # Memanggil file Json
     def load_cards(self, number_of_pairs):
@@ -78,6 +103,7 @@ class WordGame:
                 card.is_face_up = False  # Tutup semua kartu yang terbuka
             self.flipped_cards = []  # Kosongkan daftar flipped cards
             self.mismatch_timer = 0
+            sound_shuffle.play()
     
     def update(self):
         if not self.game_over and not self.win:
@@ -86,7 +112,7 @@ class WordGame:
             if self.time_remaining <= 0:
                 self.end_game()
 
-            # Handle mismatched cards
+            # Kondisi jika kartu tidak sama
             if len(self.flipped_cards) == 2:
                 if self.flipped_cards[0].word != self.flipped_cards[1].word:
                     if self.mismatch_timer == 0:  
@@ -99,16 +125,22 @@ class WordGame:
                     # Cek jika semua card sudah cocok
                     if all(card.is_matched for card in self.cards):
                         self.win = True  # Set win state
+                        sound_win.play()
+                        sound_effect.stop()
 
             if self.mismatch_timer != 0 and (pg.time.get_ticks() - self.mismatch_timer) > 1000:
                 self.flipped_cards[0].flip()
                 self.flipped_cards[1].flip()
                 self.flipped_cards = []
                 self.mismatch_timer = 0  # Reset timer
+    
+        self.manage_background_music()
 
     def end_game(self):
         self.game_over = True  # Set game over state
         print("Game Over")
+        sound_lose.play()
+        sound_effect.stop()
 
     def restart(self):
         self.cards = []
@@ -181,6 +213,8 @@ def game_screen():
                     back_rect = pg.Rect(screen_width // 2 - back_button.get_width() // 2 - back_button.get_width() - 10, screen_height // 2.8 + game_over_img.get_height() // 2 + 10, back_button.get_width(), back_button.get_height())
                     if back_rect.collidepoint(mouse_x, mouse_y):
                         return start_screen(game_screen)
+                    
+                    # sound_effect.stop()
                 else:
                     mouse_x, mouse_y = event.pos
                     back_rect = pg.Rect(screen_width // 2 - 185, screen_height // 2.8 - 200, back_button.get_width(), back_button.get_height())
