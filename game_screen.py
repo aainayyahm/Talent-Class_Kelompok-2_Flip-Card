@@ -196,11 +196,12 @@ def game_screen():
                     for index, card in enumerate(game.cards):
                         x = (index % 4) * (card_back_img.get_width() + 10) + 30
                         y = (index // 4) * (card_back_img.get_height() + 10) + 70
-    
+
                         if x < mouse_x < x + card_back_img.get_width() and y < mouse_y < y + card_back_img.get_height():
-                            if not card.is_face_up and not card.is_matched:
+                            if len(game.flipped_cards) < 2 and not card.is_face_up and not card.is_matched:  # Memastikan hanya 2 kartu yang bisa dibuka
                                 card.flip()
                                 game.flipped_cards.append(card)
+
 
         game.update()
         screen.fill(white)
