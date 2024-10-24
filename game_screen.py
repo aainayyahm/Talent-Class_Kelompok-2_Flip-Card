@@ -55,6 +55,7 @@ class WordGame:
         self.load_cards(8)  # Inisiasi jumlah card yang dicocokkan
         self.start_time = pg.time.get_ticks()
         self.font = pg.font.SysFont('Arial', 15)
+        self.bold_font = pg.font.SysFont('Arial', 18, bold=True)
         self.flipped_cards = []
         self.mismatch_timer = 0
         self.game_over = False  # Game over state
@@ -150,8 +151,10 @@ class WordGame:
                     screen.blit(card_back_img, (x, y))
 
             # Menampilkan waktu dan back button di game screen
-            timer_text = self.font.render(f"Time: {self.time_remaining}s", True, (0, 0, 0))
-            screen.blit(timer_text, (screen_width - 240, 20))
+            minutes = self.time_remaining // 60
+            seconds = self.time_remaining % 60
+            timer_text = self.bold_font.render(f"{minutes:02}:{seconds:02}", True, (0, 0, 0))
+            screen.blit(timer_text, (screen_width - 230, 20))
             screen.blit(back_button, (screen_width // 2 - 185, screen_height // 2.8 - 200))
             screen.blit(shuffle_button, (screen_width // 2 + 148, screen_height // 2.8 - 200))
 
