@@ -125,8 +125,10 @@ class WordGame:
         # Tampilan jika menang
         if self.win:
             screen.blit(win_img, (screen_width // 2 - win_img.get_width() // 2, screen_height // 2 - win_img.get_height() // 2))
-            screen.blit(restart_button, (screen_width // 2, screen_height // 2.8 + game_over_img.get_height() // 2))
-            screen.blit(back_button, (screen_width // 2 - back_button.get_width() - 10, screen_height // 2.8 + game_over_img.get_height() // 2))
+            screen.blit(restart_button, (screen_width // 2, screen_height // 2.8 + game_over_img.get_height() // 2 + 10))
+            screen.blit(back_button, (screen_width // 2 - back_button.get_width() - 10, screen_height // 2.8 + game_over_img.get_height() // 2 + 10))
+            # screen.blit(restart_button, (screen_width // 2, screen_height // 2.8 + game_over_img.get_height() // 2))
+            # screen.blit(back_button, (screen_width // 2 - back_button.get_width() - 10, screen_height // 2.8 + game_over_img.get_height() // 2))
         # Tampilan jika game over
         elif self.game_over:
             screen.blit(game_over_img, (screen_width // 2 - game_over_img.get_width() // 2, screen_height // 2 - game_over_img.get_height() // 2))
@@ -169,18 +171,14 @@ def game_screen():
             if event.type == pg.QUIT:
                 running = False
             elif event.type == pg.MOUSEBUTTONDOWN:
+                # Atur posisi mouse
                 if game.win or game.game_over:
                     mouse_x, mouse_y = event.pos
-                    
-                    restart_rect = pg.Rect(screen_width // 2 - restart_button.get_width() // 2,
-                                            screen_height // 2.8 + game_over_img.get_height() // 2 + 10,
-                                            restart_button.get_width(), restart_button.get_height())
+                    restart_rect = pg.Rect(screen_width // 2, screen_height // 2.8 + game_over_img.get_height() // 2 + 10, restart_button.get_width(), restart_button.get_height())
                     if restart_rect.collidepoint(mouse_x, mouse_y):
                         game.restart()
                 
-                    back_rect = pg.Rect(screen_width // 2 - restart_button.get_width() // 2 - back_button.get_width() - 10,
-                                        screen_height // 2.8 + game_over_img.get_height() // 2 + 10,
-                                        back_button.get_width(), back_button.get_height())
+                    back_rect = pg.Rect(screen_width // 2 - back_button.get_width() // 2 - back_button.get_width() - 10, screen_height // 2.8 + game_over_img.get_height() // 2 + 10, back_button.get_width(), back_button.get_height())
                     if back_rect.collidepoint(mouse_x, mouse_y):
                         return start_screen(game_screen)
                 else:
